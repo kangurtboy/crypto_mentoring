@@ -69,6 +69,7 @@
             <dt class="text-sm font-medium text-gray-500 truncate">
               {{ticker.name}} - USD
             </dt>
+			<img v-if="tickerLoading && tickers[tickers.length -1] === ticker" src="./assets/loader.gif" alt="" class="w-10 mx-auto">
             <dd class="mt-1 text-3xl font-semibold text-gray-900">
               {{ticker.price}}
             </dd>
@@ -150,6 +151,7 @@ export default {
 	data() {
 		return {
 			loader: false,
+			tickerLoading: false ,
 			newTicker: {
 				name: `TEST${Math.floor(Math.random() * 100)}`,
 				price: Math.floor(Math.random() * 10000)
@@ -181,8 +183,10 @@ export default {
 	methods : {
 		addTicker() {
 			this.tickers.push({});
+			this.tickerLoading = true;
 			setTimeout(() => {
-				this.tickers[this.tickers.length - 1] = this.newTicker;
+				this.tickers[this.tickers.length - 1] = this.newTicker;					
+				this.tickerLoading = false;
 			},3000)
 		}
 		
