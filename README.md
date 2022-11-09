@@ -1,7 +1,24 @@
-# Учебный проект на Vue.js v3
+# crypto_monitoring
 
-По мере прохождения обучения я буду разрабатывать этот проект. 
+## Project setup
+```
+npm install
+```
 
-## Возможности проекта
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
 
-### Установка и запуск проекта
+### Compiles and minifies for production
+```
+npm run build
+```
+
+### Lints and fixes files
+```
+npm run lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
