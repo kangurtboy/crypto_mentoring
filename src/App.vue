@@ -23,17 +23,12 @@
 			placeholder="Например DOGE" />
           </div>
           <div class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap">
-            <span class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer">
-              BTC
-            </span>
-            <span class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer">
-              DOGE
-            </span>
-            <span class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer">
-              BCH
-            </span>
-            <span class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer">
-              CHD
+            <span 
+			v-for="(suggest , id) of suggested_tickers"
+			:key="id"
+			@click="userInput = suggest.name"
+			class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer">
+              {{suggest.name}}
             </span>
           </div>
           <div v-if="false" class="text-sm text-red-600">Такой тикер уже добавлен</div>
@@ -160,6 +155,22 @@ export default {
 			tickerLoading: false,
 			userInput: 'btc',
 			selectedTicker: null,
+			suggested_tickers: [{
+				name: 'BTC',
+				price: 24354.23432
+			},
+			{
+				name: 'DOGE',
+				price: 24354.23432
+			},
+			{
+				name: 'BCH',
+				price: 24354.23432
+			},
+			{
+				name: 'CHD',
+				price: 24354.23432
+			}],
 			tickers: [{
 				name: 'TEST1',
 				price: 1234.4325
