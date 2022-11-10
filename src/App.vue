@@ -200,7 +200,6 @@ export default {
 					})
 				}
 			}
-			console.log(newTicker)
 		},
 
 		removeTicker(ticker) {
