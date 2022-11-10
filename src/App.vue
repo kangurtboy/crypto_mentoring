@@ -169,7 +169,7 @@ export default {
 				price: 24354.23432
 			},
 			{
-				name: 'CHD',
+				name: 'BUSD',
 				price: 24354.23432
 			}],
 			tickers: []
@@ -178,10 +178,9 @@ export default {
 
 	methods : {
 		addTicker() {
-
 			const newTicker = {
-				name: `${this.userInput.toUpperCase()}`,
-				price: Math.floor(Math.random() * 10000)
+				name: this.userInput.toUpperCase(),
+				price: this.requestTickets().then(r => newTicker.price = r.USD)
 			};
 
 			if (this.userInput) {
@@ -191,23 +190,22 @@ export default {
 						this.errorMessage = 'Такой тикер уже добавлен';
 					}
 				});
-
+				
 				if (!this.errorMessage) {
-					this.tickers.push({});
 					this.tickerLoading = true;
-					setTimeout(() => {
-					this.tickers[this.tickers.length - 1] = newTicker;
-					this.requestTickets();
-				}, 3000);
+					this.tickers.push({});
+					this.requestTickets().then(r => {
+						r;	
+						this.tickers[this.tickers.length - 1] = newTicker;
+					})
 				}
-
 			}
+			console.log(newTicker)
 		},
 
 		removeTicker(ticker) {
 			this.tickers = this.tickers.filter((item => item !== ticker));
 			this.selectedTicker = false;
-
 		},
 		selectTicker(ticker) {
 			this.selectedTicker = ticker;
@@ -216,9 +214,9 @@ export default {
 		async requestTickets() {
 			const apiUrl = `https://min-api.cryptocompare.com/data/price?fsym=${this.userInput}&tsyms=USD`;
 			const data = await fetch(apiUrl);
-			data.json().then(r => console.log(r));
-			this.userInput = '';
 			this.tickerLoading = false;
+			this.userInput = '';
+			return	 data.json().then(r => r);
 		}
 		
 	}
