@@ -172,27 +172,7 @@ export default {
 				name: 'CHD',
 				price: 24354.23432
 			}],
-			tickers: [{
-				name: 'TEST1',
-				price: 1234.4325
-			},
-			{
-				name: 'TEST2',
-				price: 74875.4325
-			},
-			{
-				name: 'TEST3',
-				price: 232.4325
-			},
-			{
-				name: 'TEST4',
-				price: 8987.4325
-			},
-			{
-				name: 'TEST5',
-				price: 5555.4325
-			},
-			]
+			tickers: []
 		}
 	},
 
@@ -203,6 +183,7 @@ export default {
 				name: `${this.userInput.toUpperCase()}`,
 				price: Math.floor(Math.random() * 10000)
 			};
+
 			if (this.userInput) {
 				this.errorMessage = '';
 				this.tickers.forEach(item => {
@@ -213,16 +194,13 @@ export default {
 
 				if (!this.errorMessage) {
 					this.tickers.push({});
-					this.userInput = '';
 					this.tickerLoading = true;
-
 					setTimeout(() => {
 					this.tickers[this.tickers.length - 1] = newTicker;
-					this.tickerLoading = false;
+					this.requestTickets();
 				}, 3000);
 				}
 
-			
 			}
 		},
 
@@ -233,6 +211,14 @@ export default {
 		},
 		selectTicker(ticker) {
 			this.selectedTicker = ticker;
+		},
+
+		async requestTickets() {
+			const apiUrl = `https://min-api.cryptocompare.com/data/price?fsym=${this.userInput}&tsyms=USD`;
+			const data = await fetch(apiUrl);
+			data.json().then(r => console.log(r));
+			this.userInput = '';
+			this.tickerLoading = false;
 		}
 		
 	}
