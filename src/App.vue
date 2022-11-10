@@ -31,7 +31,7 @@
               {{suggest.name}}
             </span>
           </div>
-          <div v-if="false" class="text-sm text-red-600">Такой тикер уже добавлен</div>
+          <div v-if="errorMessage" class="text-sm text-red-600">{{errorMessage}}</div>
         </div>
       </div>
       <button
@@ -153,6 +153,7 @@ export default {
 		return {
 			loader: false,
 			tickerLoading: false,
+			errorMessage: '',
 			userInput: 'btc',
 			selectedTicker: null,
 			suggested_tickers: [{
@@ -199,17 +200,29 @@ export default {
 		addTicker() {
 
 			const newTicker = {
-				name: `${this.userInput.toUpperCase()} ${Math.floor(Math.random() * 100)}`,
+				name: `${this.userInput.toUpperCase()}`,
 				price: Math.floor(Math.random() * 10000)
 			};
-			if (this.userInput) {	
-				this.tickers.push({});
-				this.userInput = '';
-			this.tickerLoading = true;
-				setTimeout(() => {
+			if (this.userInput) {
+				this.errorMessage = '';
+				this.tickers.forEach(item => {
+					if (item.name === this.userInput) {
+						this.errorMessage = 'Такой тикер уже добавлен';
+					}
+				});
+
+				if (!this.errorMessage) {
+					this.tickers.push({});
+					this.userInput = '';
+					this.tickerLoading = true;
+
+					setTimeout(() => {
 					this.tickers[this.tickers.length - 1] = newTicker;
 					this.tickerLoading = false;
-				}, 3000)
+				}, 3000);
+				}
+
+			
 			}
 		},
 
