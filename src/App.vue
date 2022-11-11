@@ -61,7 +61,7 @@
 		<div class="bg-white overflow-hidden shadow rounded-lg border-purple-800 border-solid cursor-pointer"
 		@click="selectTicker(ticker)"
 		:class="{
-			'border-4': selectedTicker === ticker ,
+			'border-4': currentTicker === ticker ,
 		}"
 			v-for="(ticker , id) of tickers" :key="id">
           <div class="px-4 py-5 sm:p-6 text-center">
@@ -94,20 +94,23 @@
       </dl>
 	<h1 v-if="!tickers.length" class="text-xl text-center">Нет активных тикеров</h1>
       <hr class="w-full border-t border-gray-600 my-4" />
-    <section class="relative" v-if="selectedTicker">
+    <section class="relative" v-if="currentTicker">
       <h3 class="text-lg leading-6 font-medium text-gray-900 my-8">
-        {{selectedTicker.name}} - USD
+        {{currentTicker.name}} - USD
       </h3>
       <div class="flex items-end border-gray-600 border-b border-l h-64">
-        <div
-          class="bg-purple-800 border w-10 h-24"
+        <div v-for="stripe of stripesPersentage"
+          class="bg-purple-800 border w-10"
+		  :style="{
+			'height': `${stripe}%`
+		  }"
         ></div>
    
       </div>
       <button
         type="button"
         class="absolute top-0 right-0"
-		@click="this.selectedTicker = false"
+		@click="this.currentTicker = false"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -137,6 +140,8 @@
 </template>
 
 <script>
+import { LOGICAL_OPERATORS } from '@babel/types';
+
 
 require('@/assets/css/app.css');
 
@@ -147,7 +152,9 @@ export default {
 			tickerLoading: false,
 			errorMessage: '',
 			userInput: 'btc',
-			selectedTicker: null,
+			currentTicker: null,
+			stripes: [],
+			stripesPersentage: [],
 			suggested_tickers: [{
 				name: 'BTC',
 				price: 24354.23432
@@ -170,7 +177,7 @@ export default {
 
 	methods : {
 		addTicker() {
-			
+
 			if (this.userInput) {
 				this.errorMessage = '';
 				this.tickers.forEach(item => {
@@ -190,7 +197,6 @@ export default {
 						};
 						this.tickerLoading = false;
 						this.userInput = '';
-						console.log(r)
 					})
 				}
 			}
@@ -198,16 +204,33 @@ export default {
 
 		removeTicker(ticker) {
 			this.tickers = this.tickers.filter((item => item !== ticker));
-			this.selectedTicker = false;
+			this.currentTicker = false;
 		},
 		selectTicker(ticker) {
-			this.selectedTicker = ticker;
+			this.currentTicker = ticker;
+			this.renderStripes();
 		},
 
 		async requestTickets(tickerName) {
 			const apiUrl = `https://min-api.cryptocompare.com/data/price?fsym=${tickerName}&tsyms=USD`;
 			const data = await fetch(apiUrl);
 			return	 data.json().then(r => r);
+		},
+
+		async renderStripes() {
+			setInterval(() => {
+				if (this.currentTicker.name) {
+					this.requestTickets(this.currentTicker.name).then(
+						r => {
+							this.stripes.push(r.USD);
+							const min = Math.min.apply(null ,this.stripes);
+							const minPersent = 1;
+							const persentage = Math.floor(((r.USD - min) * 100) / 100) + minPersent;
+							this.stripesPersentage.push(persentage);
+						}
+						);
+				}
+			},3000)
 		}
 		
 	}
