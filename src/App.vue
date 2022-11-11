@@ -102,15 +102,7 @@
         <div
           class="bg-purple-800 border w-10 h-24"
         ></div>
-        <div
-          class="bg-purple-800 border w-10 h-32"
-        ></div>
-        <div
-          class="bg-purple-800 border w-10 h-48"
-        ></div>
-        <div
-          class="bg-purple-800 border w-10 h-16"
-        ></div>
+   
       </div>
       <button
         type="button"
@@ -178,11 +170,7 @@ export default {
 
 	methods : {
 		addTicker() {
-			const newTicker = {
-				name: this.userInput.toUpperCase(),
-				price: this.requestTickets().then(r => newTicker.price = r.USD)
-			};
-
+			
 			if (this.userInput) {
 				this.errorMessage = '';
 				this.tickers.forEach(item => {
@@ -194,9 +182,15 @@ export default {
 				if (!this.errorMessage) {
 					this.tickerLoading = true;
 					this.tickers.push({});
-					this.requestTickets().then(r => {
+					this.requestTickets(this.userInput).then(r => {
 						r;	
-						this.tickers[this.tickers.length - 1] = newTicker;
+						this.tickers[this.tickers.length - 1] = {
+							name: this.userInput.toUpperCase(),
+							price: r.USD
+						};
+						this.tickerLoading = false;
+						this.userInput = '';
+						console.log(r)
 					})
 				}
 			}
@@ -210,11 +204,9 @@ export default {
 			this.selectedTicker = ticker;
 		},
 
-		async requestTickets() {
-			const apiUrl = `https://min-api.cryptocompare.com/data/price?fsym=${this.userInput}&tsyms=USD`;
+		async requestTickets(tickerName) {
+			const apiUrl = `https://min-api.cryptocompare.com/data/price?fsym=${tickerName}&tsyms=USD`;
 			const data = await fetch(apiUrl);
-			this.tickerLoading = false;
-			this.userInput = '';
 			return	 data.json().then(r => r);
 		}
 		
