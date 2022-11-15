@@ -150,22 +150,7 @@ export default {
 			currentTicker: null,
 			stripes: [],
 			stripesPersentage: [],
-			all_suggested_tickers: [{
-				name: 'BTC',
-				price: 24354.23432
-			},
-			{
-				name: 'DOGE',
-				price: 24354.23432
-			},
-			{
-				name: 'BCH',
-				price: 24354.23432
-			},
-			{
-				name: 'BUSD',
-				price: 24354.23432
-				}],
+			all_suggested_tickers: [],
 			quick_suggests: [],
 			tickers: []
 		}
