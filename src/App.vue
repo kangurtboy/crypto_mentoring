@@ -23,7 +23,7 @@
 			class="block w-full pr-10 border-gray-300 text-gray-900 focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md p-2 mb-1"
 			placeholder="Например DOGE" />
           </div>
-          <div class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap p-2">
+          <div v-if="quick_suggests.length" class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap p-2">
             <span 
 			v-for="(suggest , id) of quick_suggests"
 			:key="id"
@@ -146,7 +146,7 @@ export default {
 			loader: false,
 			tickerLoading: false,
 			errorMessage: '',
-			userInput: 'btc',
+			userInput: '',
 			currentTicker: null,
 			stripes: [],
 			stripesPersentage: [],
