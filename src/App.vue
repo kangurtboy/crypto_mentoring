@@ -98,15 +98,14 @@
       <h3 class="text-lg leading-6 font-medium text-gray-900 my-8">
         {{currentTicker.name}} - USD
       </h3>
-      <div class="flex items-end border-gray-600 border-b border-l h-64">
-        <div v-for="stripe of stripesPersentage"
-          class="bg-purple-800 border w-10"
-		  :style="{
+	<div class="flex items-end border-gray-600 border-b border-l h-64">
+		<div v-for="(stripe , id) of stripesPersentage" class="bg-purple-800 border w-10" 
+		:key="id" 
+		:style="{
 			'height': `${stripe}%`
-		  }"
-        ></div>
-   
-      </div>
+		}">
+		</div>
+	</div>
       <button
         type="button"
         class="absolute top-0 right-0"
@@ -140,8 +139,6 @@
 </template>
 
 <script>
-import { LOGICAL_OPERATORS } from '@babel/types';
-
 
 require('@/assets/css/app.css');
 
