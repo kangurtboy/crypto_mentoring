@@ -139,9 +139,6 @@
 </template>
 
 <script>
-
-require('@/assets/css/app.css');
-
 export default {
 	data() {
 		return {
@@ -233,5 +230,3 @@ export default {
 	}
 }
 </script>
-
-<style scr="@/assets/css/app.css"> </style>
