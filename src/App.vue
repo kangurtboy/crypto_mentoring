@@ -16,7 +16,7 @@
           <div class="mt-1 relative rounded-md shadow-md">
 			<input 
 			v-model="userInput"
-			@keydown.enter="addTicker"
+			@keydown.enter="addTicker(userInput)"
 			@input="onInput"
 			type="text" 
 			name="wallet" id="wallet"
@@ -27,7 +27,7 @@
             <span 
 			v-for="(suggest , id) of quick_suggests"
 			:key="id"
-			@click="userInput = suggest"
+			@click="addTicker(suggest)"
 			class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer">
               {{suggest}}
             </span>
@@ -36,7 +36,7 @@
         </div>
       </div>
       <button
-		@click="addTicker"
+		@click="addTicker(userInput)"
         type="button"
         class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
       >
@@ -157,12 +157,11 @@ export default {
 	},
 
 	methods : {
-		addTicker() {
-
+		addTicker(data) {
 			if (this.userInput) {
 				this.errorMessage = '';
 				this.tickers.forEach(item => {
-					if (item.name === this.userInput) {
+					if (item.name === this.userInput.toUpperCase() || item.name === data.toUpperCase()) {
 						this.errorMessage = 'Такой тикер уже добавлен';
 					}
 				});
@@ -170,14 +169,15 @@ export default {
 				if (!this.errorMessage) {
 					this.tickerLoading = true;
 					this.tickers.push({});
-					this.requestTickets(this.userInput).then(r => {
+					this.requestTickets(data).then(r => {
 						r;	
 						this.tickers[this.tickers.length - 1] = {
-							name: this.userInput.toUpperCase(),
+							name: data.toUpperCase(),
 							price: r.USD
 						};
 						this.tickerLoading = false;
 						this.userInput = '';
+						this.quick_suggests = [];
 					})
 				}
 			}
