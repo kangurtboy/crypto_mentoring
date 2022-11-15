@@ -17,18 +17,19 @@
 			<input 
 			v-model="userInput"
 			@keydown.enter="addTicker"
+			@input="onInput"
 			type="text" 
 			name="wallet" id="wallet"
-			class="block w-full pr-10 border-gray-300 text-gray-900 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
+			class="block w-full pr-10 border-gray-300 text-gray-900 focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md p-2 mb-1"
 			placeholder="Например DOGE" />
           </div>
-          <div class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap">
+          <div class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap p-2">
             <span 
-			v-for="(suggest , id) of suggested_tickers"
+			v-for="(suggest , id) of quick_suggests"
 			:key="id"
-			@click="userInput = suggest.name"
+			@click="userInput = suggest"
 			class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer">
-              {{suggest.name}}
+              {{suggest}}
             </span>
           </div>
           <div v-if="errorMessage" class="text-sm text-red-600">{{errorMessage}}</div>
@@ -149,7 +150,7 @@ export default {
 			currentTicker: null,
 			stripes: [],
 			stripesPersentage: [],
-			suggested_tickers: [{
+			all_suggested_tickers: [{
 				name: 'BTC',
 				price: 24354.23432
 			},
@@ -164,7 +165,8 @@ export default {
 			{
 				name: 'BUSD',
 				price: 24354.23432
-			}],
+				}],
+			quick_suggests: [],
 			tickers: []
 		}
 	},
@@ -225,8 +227,29 @@ export default {
 						);
 				}
 			},3000)
+		},
+
+		onInput() {
+			this.errorMessage = '';
+			this.quick_suggests = [];
+			for (let item in this.all_suggested_tickers) {
+				if (item.startsWith(this.userInput.toUpperCase())) {
+					for (let i = 0; i < 4; i++) {
+						this.quick_suggests.push(item);
+					}
+					break;
+				}
+			}
 		}
 		
+	},
+	created: function () {
+		const getSuggest = fetch('https://min-api.cryptocompare.com/data/all/coinlist?summary=true');
+		getSuggest.then(r => {
+		r.json().then(res => {
+			this.all_suggested_tickers = res.Data;
+			})
+		});
 	}
 }
 </script>
