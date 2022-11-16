@@ -158,7 +158,7 @@ export default {
 
 	methods : {
 		addTicker(data) {
-			if (this.userInput) {
+			if (this.userInput || data) {
 				this.errorMessage = '';
 				this.tickers.forEach(item => {
 					if (item.name === this.userInput.toUpperCase() || item.name === data.toUpperCase()) {
@@ -218,7 +218,7 @@ export default {
 			this.errorMessage = '';
 			this.quick_suggests = [];
 			for (let item in this.all_suggested_tickers) {
-				if (item.startsWith(this.userInput.toUpperCase())) {
+				if (item.startsWith(this.userInput.toUpperCase()) && this.userInput) {
 					for (let i = 0; i < 4; i++) {
 						this.quick_suggests.push(item);
 					}
