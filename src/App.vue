@@ -110,8 +110,7 @@
       <button
         type="button"
         class="absolute top-0 right-0"
-		@click="this.currentTicker = false"
-      >
+		@click="reset">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -150,6 +149,7 @@ export default {
 			currentTicker: null,
 			stripes: [],
 			stripesPersentage: [],
+			stripeInterval: null,
 			all_suggested_tickers: [],
 			quick_suggests: [],
 			tickers: []
@@ -185,11 +185,14 @@ export default {
 
 		removeTicker(ticker) {
 			this.tickers = this.tickers.filter((item => item !== ticker));
-			this.currentTicker = false;
+			this.reset();
 		},
 		selectTicker(ticker) {
-			this.currentTicker = ticker;
+			if (this.currentTicker) {		
+				this.reset();
+			}
 			this.renderStripes();
+			this.currentTicker = ticker;
 		},
 
 		async requestTickets(tickerName) {
@@ -199,19 +202,21 @@ export default {
 		},
 
 		async renderStripes() {
-			setInterval(() => {
+			this.stripesPersentage = [];
+			this.stripes = [];
+			this.stripeInterval = setInterval(() => {
 				if (this.currentTicker.name) {
 					this.requestTickets(this.currentTicker.name).then(
 						r => {
 							this.stripes.push(r.USD);
-							const min = Math.min.apply(null ,this.stripes);
+							const min = Math.min(...this.stripes);
 							const minPersent = 1;
 							const persentage = Math.floor(((r.USD - min) * 100) / 100) + minPersent;
 							this.stripesPersentage.push(persentage);
 						}
-						);
+					);
 				}
-			},3000)
+			}, 3000);		
 		},
 
 		onInput() {
@@ -225,6 +230,11 @@ export default {
 					break;
 				}
 			}
+		},
+
+		reset() {
+			clearInterval(this.stripeInterval);
+			this.currentTicker = null;
 		}
 		
 	},
