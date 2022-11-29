@@ -250,11 +250,21 @@ export default {
 					this.all_suggested_tickers = res.Data;
 				})
 			});
+		},
+		updateRenderetTickers() {
+			//обновление загружанных тикеров
+			setInterval(() => {
+				this.tickers.forEach(ticker => {
+					this.requestTickets(ticker.name).
+						then(data => ticker.price = data.USD);
+				})
+			}, 3000);
 		}
 		
 	},
 	created: function () {
 		this.getSuggest();
+		this.updateRenderetTickers();
 	}
 }
 </script>
