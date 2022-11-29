@@ -170,7 +170,6 @@ export default {
 					this.tickerLoading = true;
 					this.tickers.push({});
 					this.requestTickets(data).then(r => {
-						r;	
 						this.tickers[this.tickers.length - 1] = {
 							name: data.toUpperCase(),
 							price: r.USD
@@ -235,16 +234,19 @@ export default {
 		reset() {
 			clearInterval(this.stripeInterval);
 			this.currentTicker = null;
+		},
+		getSuggest() {
+			const suggest = fetch('https://min-api.cryptocompare.com/data/all/coinlist?summary=true');
+			suggest.then(r => {
+				r.json().then(res => {
+					this.all_suggested_tickers = res.Data;
+				})
+			});
 		}
 		
 	},
 	created: function () {
-		const getSuggest = fetch('https://min-api.cryptocompare.com/data/all/coinlist?summary=true');
-		getSuggest.then(r => {
-		r.json().then(res => {
-			this.all_suggested_tickers = res.Data;
-			})
-		});
+		this.getSuggest();
 	}
 }
 </script>
