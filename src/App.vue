@@ -158,6 +158,7 @@ export default {
 
 	methods : {
 		addTicker(data) {
+			//добавление тикеров
 			if (this.userInput || data) {
 				this.errorMessage = '';
 				this.tickers.forEach(item => {
@@ -183,10 +184,12 @@ export default {
 		},
 
 		removeTicker(ticker) {
+			//удаление тикеров
 			this.tickers = this.tickers.filter((item => item !== ticker));
 			this.reset();
 		},
 		selectTicker(ticker) {
+			//выборка тикеров
 			if (this.currentTicker) {		
 				this.reset();
 			}
@@ -195,12 +198,14 @@ export default {
 		},
 
 		async requestTickets(tickerName) {
+			//запросить определенный  тикер
 			const apiUrl = `https://min-api.cryptocompare.com/data/price?fsym=${tickerName}&tsyms=USD`;
 			const data = await fetch(apiUrl);
 			return	 data.json().then(r => r);
 		},
 
 		async renderStripes() {
+			//отрисовка столбиков для показа графика тикера
 			this.stripesPersentage = [];
 			this.stripes = [];
 			this.stripeInterval = setInterval(() => {
@@ -219,6 +224,7 @@ export default {
 		},
 
 		onInput() {
+			//обработчик поля ввыода для добавленя тикера
 			this.errorMessage = '';
 			this.quick_suggests = [];
 			for (let item in this.all_suggested_tickers) {
@@ -232,10 +238,12 @@ export default {
 		},
 
 		reset() {
+			//сброс выбраного тикера
 			clearInterval(this.stripeInterval);
 			this.currentTicker = null;
 		},
 		getSuggest() {
+			//получения имена всех криптовалютов с сервера
 			const suggest = fetch('https://min-api.cryptocompare.com/data/all/coinlist?summary=true');
 			suggest.then(r => {
 				r.json().then(res => {
