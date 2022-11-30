@@ -178,7 +178,8 @@ export default {
 						this.tickerLoading = false;
 						this.userInput = '';
 						this.quick_suggests = [];
-					})
+						this.saveTickersLocal('set');
+					});
 				}
 			}
 		},
@@ -187,6 +188,7 @@ export default {
 			//удаление тикеров
 			this.tickers = this.tickers.filter((item => item !== ticker));
 			this.reset();
+			this.saveTickersLocal('set');
 		},
 		selectTicker(ticker) {
 			//выборка тикеров
@@ -259,12 +261,31 @@ export default {
 						then(data => ticker.price = data.USD);
 				})
 			}, 3000);
+		},
+
+		saveTickersLocal(action) {
+			//сохранение даннх в localStorage
+			const localcontext = this;
+			const settings = {
+
+				'set': function () {
+					localStorage.setItem('localTickers', JSON.stringify(localcontext.tickers));
+				},
+
+				'get': function () {
+					if (localStorage.getItem('localTickers')) {
+						localcontext.tickers = JSON.parse(localStorage.getItem('localTickers'))
+					}
+				}
+			}
+			settings[action]();
 		}
 		
 	},
 	created: function () {
 		this.getSuggest();
 		this.updateRenderetTickers();
+		this.saveTickersLocal('get');
 	}
 }
 </script>
