@@ -58,9 +58,15 @@
     </section>
 	<div class="flex gap-4 items-center justify-center">
 		<button
-			class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Назад</button>
+			v-if="(paginationEnd - paginationStart > 0)"
+			class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+			@click="paginationPrev"
+			>Назад</button>
 		<button
-			class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Вперед</button>
+			class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+			@click="paginationNext"
+			v-if="(paginationEnd !== tickers.length)"
+			>Вперед</button>
 		<input type="text"
 			placeholder="Поиск"
 			class="block w-full pr-10 border-gray-300 text-gray-900 focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md p-2 mb-1 w-24 h-8">
@@ -72,7 +78,7 @@
 		:class="{
 			'border-4': currentTicker === ticker ,
 		}"
-			v-for="(ticker , id) of tickers" :key="id">
+			v-for="(ticker , id) of filterTickers()" :key="id">
           <div class="px-4 py-5 sm:p-6 text-center">
             <dt class="text-sm font-medium text-gray-500 truncate">
               {{ticker.name}} - USD
@@ -160,7 +166,10 @@ export default {
 			stripeInterval: null,
 			all_suggested_tickers: [],
 			quick_suggests: [],
-			tickers: []
+			tickers: [],
+			paginationStart: 6,
+			paginationEnd: 6,
+			paginationStep: 6
 		}
 	},
 
@@ -287,9 +296,36 @@ export default {
 				}
 			}
 			settings[action]();
+		},
+		filterTickers() {
+			return this.tickers.slice(this.paginationEnd - this.paginationStart, this.paginationEnd);
+		},
+		paginationPrev() {
+			//Пагинация назад🤢🤢🤢🤢🤢🤢🤢🤢
+			if (this.paginationEnd - this.paginationStart < this.paginationStep) {
+				this.paginationEnd = this.paginationStep;
+				this.paginationStart = this.paginationStep;
+			} else if (this.paginationStart < this.paginationStep) {
+				this.paginationEnd -= this.paginationStart;
+				this.paginationStart = this.paginationStep;
+			} else {
+				this.paginationEnd -= this.paginationStart;
+				this.paginationStart = this.paginationStep;
+			}
+		},
+		paginationNext() {
+			//Пагинация вперед				
+				if (this.paginationEnd + this.paginationStart >= this.tickers.length - 1) {
+					this.paginationStart = this.tickers.length - this.paginationEnd ;
+					this.paginationEnd = this.tickers.length;
+				} else {
+					this.paginationEnd += this.paginationStart;
+					this.paginationStart = this.paginationStep;
+				}
 		}
-		
-	},
+				
+		},
+	
 	created: function () {
 		this.getSuggest();
 		this.updateRenderetTickers();
