@@ -65,11 +65,14 @@
 		<button
 			class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 			@click="paginationNext"
-			v-if="(paginationEnd !== tickers.length)"
+			v-if="(paginationEnd < tickers.length)"
 			>Вперед</button>
 		<input type="text"
 			placeholder="Поиск"
-			class="block w-full pr-10 border-gray-300 text-gray-900 focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md p-2 mb-1 w-24 h-8">
+			class="block w-full pr-10 border-gray-300 text-gray-900 focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md p-2 mb-1 w-24 h-8"
+			v-model="searchValue"
+			@input="search"
+			>
 	</div>
       <hr class="w-full border-t border-gray-600 my-4" />
       <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
@@ -83,7 +86,7 @@
             <dt class="text-sm font-medium text-gray-500 truncate">
               {{ticker.name}} - USD
             </dt>
-			<img v-if="tickerLoading && tickers[tickers.length -1] === ticker" src="./assets/loader.gif" alt="" class="w-10 mx-auto">
+			<img v-if="tickerLoading && filterTickers()[filterTickers().length -1] === ticker" src="./assets/loader.gif" alt="" class="w-10 mx-auto">
             <dd class="mt-1 text-3xl font-semibold text-gray-900">
               {{ticker.price}}
             </dd>
@@ -169,7 +172,9 @@ export default {
 			tickers: [],
 			paginationStart: 6,
 			paginationEnd: 6,
-			paginationStep: 6
+			paginationStep: 6,
+			searchValue: '',
+			filteredTickers: []
 		}
 	},
 
@@ -298,10 +303,16 @@ export default {
 			settings[action]();
 		},
 		filterTickers() {
-			return this.tickers.slice(this.paginationEnd - this.paginationStart, this.paginationEnd);
+			let tickers = [];
+			if (this.filteredTickers.length) {
+				tickers = this.filteredTickers;
+			} else {
+				tickers = this.tickers;
+			}
+			return tickers.slice(this.paginationEnd - this.paginationStart, this.paginationEnd);
 		},
 		paginationPrev() {
-			//Пагинация назад🤢🤢🤢🤢🤢🤢🤢🤢
+			//Пагинация назад🤢🤢🤢🤢🤢🤢🤢🤢🤮🤮
 			if (this.paginationEnd - this.paginationStart < this.paginationStep) {
 				this.paginationEnd = this.paginationStep;
 				this.paginationStart = this.paginationStep;
@@ -322,14 +333,17 @@ export default {
 					this.paginationEnd += this.paginationStart;
 					this.paginationStart = this.paginationStep;
 				}
+		},
+		search() {
+			this.filteredTickers = this.tickers.filter(item => item.name.startsWith(this.searchValue.toUpperCase()));
 		}
-				
+
 		},
 	
 	created: function () {
 		this.getSuggest();
 		this.updateRenderetTickers();
 		this.saveTickersLocal('get');
-	}
+	},
 }
 </script>
