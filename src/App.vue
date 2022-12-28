@@ -81,12 +81,12 @@
 		:class="{
 			'border-4': currentTicker === ticker ,
 		}"
-			v-for="(ticker , id) of filterTickers()" :key="id">
+			v-for="(ticker , id) of filteredTickers" :key="id">
           <div class="px-4 py-5 sm:p-6 text-center">
             <dt class="text-sm font-medium text-gray-500 truncate">
               {{ticker.name}} - USD
             </dt>
-			<img v-if="tickerLoading && filterTickers()[filterTickers().length -1] === ticker" src="./assets/loader.gif" alt="" class="w-10 mx-auto">
+			<img v-if="tickerLoading && filteredTickers[filteredTickers.length -1] === ticker" src="./assets/loader.gif" alt="" class="w-10 mx-auto">
             <dd class="mt-1 text-3xl font-semibold text-gray-900">
               {{ticker.price}}
             </dd>
@@ -174,7 +174,6 @@ export default {
 			paginationEnd: 6,
 			paginationStep: 6,
 			searchValue: '',
-			filteredTickers: []
 		}
 	},
 
@@ -302,15 +301,7 @@ export default {
 			}
 			settings[action]();
 		},
-		filterTickers() {
-			let tickers = [];
-			if (this.filteredTickers.length) {
-				tickers = this.filteredTickers;
-			} else {
-				tickers = this.tickers;
-			}
-			return tickers.slice(this.paginationEnd - this.paginationStart, this.paginationEnd);
-		},
+		
 		paginationPrev() {
 			//Пагинация назад🤢🤢🤢🤢🤢🤢🤢🤢🤮🤮
 			if (this.paginationEnd - this.paginationStart < this.paginationStep) {
@@ -334,9 +325,6 @@ export default {
 					this.paginationStart = this.paginationStep;
 				}
 		},
-		search() {
-			this.filteredTickers = this.tickers.filter(item => item.name.startsWith(this.searchValue.toUpperCase()));
-		}
 
 		},
 	
@@ -344,6 +332,22 @@ export default {
 		this.getSuggest();
 		this.updateRenderetTickers();
 		this.saveTickersLocal('get');
+	},
+
+	computed: {
+		filteredTickers() {
+			//филтрация тикеров
+			let tickers = [];
+			
+			if (this.tickers.length) {
+				tickers = this.tickers;
+			}
+
+			if(this.searchValue){
+				tickers =  this.tickers.filter(item => item.name.startsWith(this.searchValue.toUpperCase()));
+			}
+			return tickers.slice(this.paginationEnd - this.paginationStart, this.paginationEnd);
+		},
 	},
 }
 </script>
