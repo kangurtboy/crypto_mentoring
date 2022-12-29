@@ -65,7 +65,7 @@
 		<button
 			class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 			@click="paginationNext"
-			v-if="(paginationEnd < tickers.length)"
+			v-if="(paginationEnd < tickers.length && !searchValue) "
 			>Вперед</button>
 		<input type="text"
 			placeholder="Поиск"
@@ -86,7 +86,7 @@
             <dt class="text-sm font-medium text-gray-500 truncate">
               {{ticker.name}} - USD
             </dt>
-			<img v-if="tickerLoading && filteredTickers[filteredTickers.length -1] === ticker" src="./assets/loader.gif" alt="" class="w-10 mx-auto">
+			<img v-if="tickerLoading && filteredTickers[filteredTickers.length - 1] === ticker" src="./assets/loader.gif" alt="" class="w-10 mx-auto">
             <dd class="mt-1 text-3xl font-semibold text-gray-900">
               {{ticker.price}}
             </dd>
@@ -199,7 +199,6 @@ export default {
 						this.tickerLoading = false;
 						this.userInput = '';
 						this.quick_suggests = [];
-						this.saveTickersLocal('set');
 					});
 				}
 			}
@@ -209,7 +208,6 @@ export default {
 			//удаление тикеров
 			this.tickers = this.tickers.filter((item => item !== ticker));
 			this.reset();
-			this.saveTickersLocal('set');
 		},
 		selectTicker(ticker) {
 			//выборка тикеров
@@ -232,12 +230,12 @@ export default {
 			this.stripesPersentage = [];
 			this.stripes = [];
 			this.stripeInterval = setInterval(() => {
-				if (this.currentTicker.name) {
+				if (this.currentTicker) {
 					this.requestTickets(this.currentTicker.name).then(
 						r => {
 							this.stripes.push(r.USD);
 							const min = Math.min(...this.stripes);
-							const minPersent = 1;
+							const minPersent = 50;
 							const persentage = Math.floor(((r.USD - min) * 100) / 100) + minPersent;
 							this.stripesPersentage.push(persentage);
 						}
@@ -317,7 +315,7 @@ export default {
 		},
 		paginationNext() {
 			//Пагинация вперед				
-				if (this.paginationEnd + this.paginationStart >= this.tickers.length - 1) {
+				if (this.paginationEnd + this.paginationStart >= this.tickers.length) {
 					this.paginationStart = this.tickers.length - this.paginationEnd ;
 					this.paginationEnd = this.tickers.length;
 				} else {
@@ -344,10 +342,25 @@ export default {
 			}
 
 			if(this.searchValue){
-				tickers =  this.tickers.filter(item => item.name.startsWith(this.searchValue.toUpperCase()));
+				//при ввыода текста в поля поиска
+				tickers = this.tickers.filter(item => item.name.startsWith(this.searchValue.toUpperCase()));
 			}
+
 			return tickers.slice(this.paginationEnd - this.paginationStart, this.paginationEnd);
 		},
 	},
+	watch:{
+
+		filteredTickers(){
+			this.saveTickersLocal('set');
+			if(this.filteredTickers.length === 0){
+				this.paginationPrev();
+			}
+		},
+
+		searchValue(){
+			this.reset();
+		}
+	}
 }
 </script>
