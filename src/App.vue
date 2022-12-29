@@ -207,6 +207,7 @@ export default {
 			this.tickers = this.tickers.filter((item => item !== ticker));
 			this.reset();
 		},
+		
 		selectTicker(ticker) {
 			//выборка тикеров
 			if (this.currentTicker) {		
@@ -260,8 +261,8 @@ export default {
 			//сброс выбраного тикера
 			clearInterval(this.stripeInterval);
 			this.currentTicker = null;
-			this.page = 1;
 		},
+
 		getSuggest() {
 			//получения имена всех криптовалютов с сервера
 			const suggest = fetch('https://min-api.cryptocompare.com/data/all/coinlist?summary=true');
@@ -271,6 +272,7 @@ export default {
 				})
 			});
 		},
+
 		updateRenderetTickers() {
 			//обновление загружанных тикеров
 			setInterval(() => {
@@ -304,12 +306,13 @@ export default {
 			this.page--;
 	
 		},
+
 		paginationNext() {
 			//Пагинация вперед	
 			this.page++;
 		},
 
-		},
+	},
 	
 	created: function () {
 		this.getSuggest();
