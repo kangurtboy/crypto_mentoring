@@ -71,7 +71,6 @@
 			placeholder="Поиск"
 			class="block w-full pr-10 border-gray-300 text-gray-900 focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md p-2 mb-1 w-24 h-8"
 			v-model="searchValue"
-			@input="search"
 			>
 	</div>
       <hr class="w-full border-t border-gray-600 my-4" />
@@ -86,7 +85,7 @@
             <dt class="text-sm font-medium text-gray-500 truncate">
               {{ticker.name}} - USD
             </dt>
-			<img v-if="tickerLoading && filteredTickers[filteredTickers.length - 1] === ticker" src="./assets/loader.gif" alt="" class="w-10 mx-auto">
+			<img v-if="tickerLoading && tickers[tickers.length - 1] === ticker" src="./assets/loader.gif" alt="" class="w-10 mx-auto">
             <dd class="mt-1 text-3xl font-semibold text-gray-900">
               {{ticker.price}}
             </dd>
@@ -346,6 +345,10 @@ export default {
 
 		searchValue(){
 			this.reset();
+		},
+
+		page(){
+			this.currentTicker = null;
 		}
 	}
 }
