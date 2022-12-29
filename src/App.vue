@@ -58,14 +58,14 @@
     </section>
 	<div class="flex gap-4 items-center justify-center">
 		<button
-			v-if="(paginationEnd - paginationStart > 0)"
+			v-if="page > 1"
 			class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 			@click="paginationPrev"
 			>Назад</button>
 		<button
 			class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 			@click="paginationNext"
-			v-if="(paginationEnd < tickers.length && !searchValue) "
+			v-if="(tickers.length / paginationCount > page && !searchValue)"
 			>Вперед</button>
 		<input type="text"
 			placeholder="Поиск"
@@ -170,9 +170,8 @@ export default {
 			all_suggested_tickers: [],
 			quick_suggests: [],
 			tickers: [],
-			paginationStart: 6,
-			paginationEnd: 6,
-			paginationStep: 6,
+			paginationCount: 6,
+			page: 1,
 			searchValue: '',
 		}
 	},
@@ -262,6 +261,7 @@ export default {
 			//сброс выбраного тикера
 			clearInterval(this.stripeInterval);
 			this.currentTicker = null;
+			this.page = 1;
 		},
 		getSuggest() {
 			//получения имена всех криптовалютов с сервера
@@ -301,27 +301,13 @@ export default {
 		},
 		
 		paginationPrev() {
-			//Пагинация назад🤢🤢🤢🤢🤢🤢🤢🤢🤮🤮
-			if (this.paginationEnd - this.paginationStart < this.paginationStep) {
-				this.paginationEnd = this.paginationStep;
-				this.paginationStart = this.paginationStep;
-			} else if (this.paginationStart < this.paginationStep) {
-				this.paginationEnd -= this.paginationStart;
-				this.paginationStart = this.paginationStep;
-			} else {
-				this.paginationEnd -= this.paginationStart;
-				this.paginationStart = this.paginationStep;
-			}
+			//Пагинация назад
+			this.page--;
+	
 		},
 		paginationNext() {
-			//Пагинация вперед				
-				if (this.paginationEnd + this.paginationStart >= this.tickers.length) {
-					this.paginationStart = this.tickers.length - this.paginationEnd ;
-					this.paginationEnd = this.tickers.length;
-				} else {
-					this.paginationEnd += this.paginationStart;
-					this.paginationStart = this.paginationStep;
-				}
+			//Пагинация вперед	
+			this.page++;
 		},
 
 		},
@@ -346,7 +332,7 @@ export default {
 				tickers = this.tickers.filter(item => item.name.startsWith(this.searchValue.toUpperCase()));
 			}
 
-			return tickers.slice(this.paginationEnd - this.paginationStart, this.paginationEnd);
+			return tickers.slice((this.page - 1) * this.paginationCount, this.page * this.paginationCount);
 		},
 	},
 	watch:{
