@@ -65,7 +65,7 @@
 		<button
 			class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
 			@click="paginationNext"
-			v-if="(tickers.length / paginationCount > page && !searchValue)"
+			v-if="hasNextPage"
 			>Вперед</button>
 		<input type="text"
 			placeholder="Поиск"
@@ -207,7 +207,7 @@ export default {
 			this.tickers = this.tickers.filter((item => item !== ticker));
 			this.reset();
 		},
-		
+
 		selectTicker(ticker) {
 			//выборка тикеров
 			if (this.currentTicker) {		
@@ -336,18 +336,32 @@ export default {
 
 			return tickers.slice((this.page - 1) * this.paginationCount, this.page * this.paginationCount);
 		},
+
+		hasNextPage() {
+			let isNext = false;
+
+			if (this.tickers.length / this.paginationCount > this.page) {
+				isNext = true;
+			}
+			if (this.searchValue) {
+				isNext = false;
+			}
+			return isNext;
+		}
 	},
 	watch:{
 
 		filteredTickers(){
 			this.saveTickersLocal('set');
-			if(this.filteredTickers.length === 0){
+			
+			if(this.filteredTickers.length === 0 && this.page > 1){
 				this.paginationPrev();
 			}
 		},
 
 		searchValue(){
-			this.reset();
+			this.currentTicker = null;
+	//		location.pathname = `/?filter=${this.searchValue}`;
 		},
 
 		page(){
