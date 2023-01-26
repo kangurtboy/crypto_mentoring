@@ -304,7 +304,6 @@ export default {
 		paginationPrev() {
 			//Пагинация назад
 			this.page--;
-	
 		},
 
 		paginationNext() {
@@ -312,12 +311,33 @@ export default {
 			this.page++;
 		},
 
+		urlLoad(){
+			// загрузка параметров url по умолчанию
+			const params  = new URLSearchParams(window.location.search);
+			if(parseInt (params.get('page'))){
+				
+				this.page = parseInt (params.get('page'));
+			}
+			this.searchValue = params.get('filter');
+		},
+
+		urlFiltering(){
+			//филтрация по URL адресса
+			const url = new URL(window.location.href);
+			const params = new URLSearchParams(url.search);
+			params.set('page' , this.page);	
+			params.set('filter' , this.searchValue);
+			url.search = params;
+			window.history.pushState({} , `${document.title} = page = ${this.page}` , url);
+		}
+
 	},
 	
 	created: function () {
 		this.getSuggest();
 		this.updateRenderetTickers();
 		this.saveTickersLocal('get');
+		this.urlLoad();
 	},
 
 	computed: {
@@ -338,6 +358,7 @@ export default {
 		},
 
 		hasNextPage() {
+			//проверка следушего стриницу 
 			let isNext = false;
 
 			if (this.tickers.length / this.paginationCount > this.page) {
@@ -361,11 +382,15 @@ export default {
 
 		searchValue(){
 			this.currentTicker = null;
-	//		location.pathname = `/?filter=${this.searchValue}`;
+			if(!this.searchValue){
+				this.searchValue = '';
+			}
+			this.urlFiltering();
 		},
 
 		page(){
 			this.currentTicker = null;
+			this.urlFiltering();
 		}
 	}
 }
