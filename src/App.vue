@@ -81,7 +81,8 @@
 			'border-4': currentTicker === ticker ,
 		}"
 			v-for="(ticker , id) of filteredTickers" :key="id">
-          <div class="px-4 py-5 sm:p-6 text-center">
+		<div class="px-4 py-5 sm:p-6 text-center" :class="{
+							'bg-red-100': !ticker.price}">
             <dt class="text-sm font-medium text-gray-500 truncate">
               {{ticker.name}} - USD
             </dt>
