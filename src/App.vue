@@ -23,9 +23,9 @@
 			class="block w-full pr-10 border-gray-300 text-gray-900 focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md p-2 mb-1"
 			placeholder="Например DOGE" />
           </div>
-          <div v-if="quick_suggests.length" class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap p-2">
+          <div v-if="suggestedTickers.length" class="flex bg-white shadow-md p-1 rounded-md shadow-md flex-wrap p-2">
             <span 
-			v-for="(suggest , id) of quick_suggests"
+			v-for="(suggest , id) of suggestedTickers"
 			:key="id"
 			@click="addTicker(suggest)"
 			class="inline-flex items-center px-2 m-1 rounded-md text-xs font-medium bg-gray-300 text-gray-800 cursor-pointer">
@@ -155,6 +155,8 @@
 </template>
 
 <script>
+import { requestTickets } from './api';
+import {getAllTickersName} from './api';
 export default {
 	data() {
 		return {
@@ -166,8 +168,8 @@ export default {
 			stripes: [],
 			stripesPersentage: [],
 			stripeInterval: null,
-			all_suggested_tickers: [],
-			quick_suggests: [],
+			allTickersName: [],
+			suggestedTickers: [],
 			tickers: [],
 			paginationCount: 6,
 			page: 1,
@@ -189,14 +191,14 @@ export default {
 				if (!this.errorMessage) {
 					this.tickerLoading = true;
 					this.tickers.push({});
-					this.requestTickets(data).then(r => {
+					requestTickets(data).then(r => {
 						this.tickers[this.tickers.length - 1] = {
 							name: data.toUpperCase(),
 							price: r.USD
 						};
 						this.tickerLoading = false;
 						this.userInput = '';
-						this.quick_suggests = [];
+						this.suggestedTickers = [];
 					});
 				}
 			}
@@ -216,21 +218,13 @@ export default {
 			this.renderStripes();
 			this.currentTicker = ticker;
 		},
-
-		async requestTickets(tickerName) {
-			//запросить определенный  тикер
-			const apiUrl = `https://min-api.cryptocompare.com/data/price?fsym=${tickerName}&tsyms=USD`;
-			const data = await fetch(apiUrl);
-			return	 data.json().then(r => r);
-		},
-
 		async renderStripes() {
 			//отрисовка столбиков для показа графика тикера
 			this.stripesPersentage = [];
 			this.stripes = [];
 			this.stripeInterval = setInterval(() => {
 				if (this.currentTicker) {
-					this.requestTickets(this.currentTicker.name).then(
+					requestTickets(this.currentTicker.name).then(
 						r => {
 							this.stripes.push(r.USD);
 							const min = Math.min(...this.stripes);
@@ -246,11 +240,11 @@ export default {
 		onInput() {
 			//обработчик поля ввыода для добавленя тикера
 			this.errorMessage = '';
-			this.quick_suggests = [];
-			for (let item in this.all_suggested_tickers) {
+			this.suggestedTickers = [];
+			for (let item in this.allTickersName) {
 				if (item.startsWith(this.userInput.toUpperCase()) && this.userInput) {
 					for (let i = 0; i < 4; i++) {
-						this.quick_suggests.push(item);
+						this.suggestedTickers.push(item);
 					}
 					break;
 				}
@@ -263,21 +257,11 @@ export default {
 			this.currentTicker = null;
 		},
 
-		getSuggest() {
-			//получения имена всех криптовалютов с сервера
-			const suggest = fetch('https://min-api.cryptocompare.com/data/all/coinlist?summary=true');
-			suggest.then(r => {
-				r.json().then(res => {
-					this.all_suggested_tickers = res.Data;
-				})
-			});
-		},
-
 		updateRenderetTickers() {
 			//обновление загружанных тикеров
 			setInterval(() => {
 				this.tickers.forEach(ticker => {
-					this.requestTickets(ticker.name).
+					requestTickets(ticker.name).
 						then(data => ticker.price = data.USD);
 				})
 			}, 3000);
@@ -334,7 +318,7 @@ export default {
 	},
 	
 	created: function () {
-		this.getSuggest();
+		getAllTickersName(this);
 		this.updateRenderetTickers();
 		this.saveTickersLocal('get');
 		this.urlLoad();
