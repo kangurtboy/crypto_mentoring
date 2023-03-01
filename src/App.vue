@@ -116,12 +116,12 @@
       <h3 class="text-lg leading-6 font-medium text-gray-900 my-8">
         {{currentTicker.name}} - USD
       </h3>
-	<div class="flex items-end border-gray-600 border-b border-l h-64">
+	<div class="flex items-end border-gray-600 border-b border-l h-64" ref="stripesContainer">
 		<div v-for="(stripe , id) of stripesPersentage" class="bg-purple-800 border w-10" 
 		:key="id" 
 		:style="{
 			'height': `${stripe}%`
-		}">
+		}" ref="stripeItem">
 		</div>
 	</div>
       <button
@@ -175,6 +175,7 @@ export default {
 			paginationCount: 6,
 			page: 1,
 			searchValue: '',
+			maxStripeItems: 0,
 		}
 	},
 
@@ -314,6 +315,15 @@ export default {
 			params.set('filter' , this.searchValue);
 			url.search = params;
 			window.history.pushState({} , `${document.title} = page = ${this.page}` , url);
+		},
+
+
+		calculateStripe(){
+			const stripeContnainer = this.$refs.stripesContainer;
+			const stripeItem = this.$refs.stripeItem[0];
+			if(stripeContnainer && stripeItem){
+			this.maxStripeItems =	Math.floor(stripeContnainer.clientWidth /stripeItem.clientWidth);
+			}
 		}
 
 	},
@@ -353,7 +363,8 @@ export default {
 				isNext = false;
 			}
 			return isNext;
-		}
+		},
+
 	},
 	watch:{
 
@@ -377,6 +388,9 @@ export default {
 			this.currentTicker = null;
 			this.urlFiltering();
 		}
+	},
+	mounted : function (){
+		window.addEventListener('resize' , this.calculateStripe);
 	}
 }
 </script>
