@@ -228,6 +228,10 @@ export default {
 				if (this.currentTicker) {
 					requestTickets(this.currentTicker.name).then(
 						r => {
+							this.calculateStripe();	
+							if(this.stripesPersentage.length > this.maxStripeItems){
+								this.stripesPersentage.shift();
+							}
 							this.stripes.push(r.USD);
 							const min = Math.min(...this.stripes);
 							const minPersent = 50;
@@ -236,7 +240,7 @@ export default {
 						}
 					);
 				}
-			}, 3000);		
+			}, 5000);		
 		},
 
 		onInput() {
@@ -318,11 +322,11 @@ export default {
 		},
 
 
-		calculateStripe(){
-			const stripeContnainer = this.$refs.stripesContainer;
-			const stripeItem = this.$refs.stripeItem[0];
-			if(stripeContnainer && stripeItem){
-			this.maxStripeItems =	Math.floor(stripeContnainer.clientWidth /stripeItem.clientWidth);
+		calculateStripe() {
+			const stripeContainer = this.$refs.stripesContainer;
+			const stripeItemWidth = 38;
+			if (stripeContainer.childElementCount) {
+				this.maxStripeItems = Math.floor(stripeContainer.clientWidth / stripeItemWidth);
 			}
 		}
 
