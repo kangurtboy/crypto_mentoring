@@ -262,7 +262,6 @@ export default {
 			// загрузка параметров url по умолчанию
 			const params = new URLSearchParams(window.location.search);
 			if (parseInt(params.get('page'))) {
-
 				this.page = parseInt(params.get('page'));
 			}
 			this.searchValue = params.get('filter');
@@ -274,6 +273,9 @@ export default {
 			const params = new URLSearchParams(url.search);
 			params.set('page', this.page);
 			params.set('filter', this.searchValue);
+			if(!this.searchValue){
+				params.delete('filter');
+			}
 			url.search = params;
 			window.history.pushState({}, `${document.title} = page = ${this.page}`, url);
 		},
@@ -339,9 +341,6 @@ export default {
 
 		searchValue() {
 			this.currentTicker = null;
-			if (!this.searchValue) {
-				this.searchValue = '';
-			}
 			this.urlFiltering();
 		},
 
