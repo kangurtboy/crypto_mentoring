@@ -1,7 +1,6 @@
 <template>
 	<div class="container mx-auto flex flex-col items-center bg-gray-100 p-4">
-		<div v-if="loader"
-			class="fixed w-100 h-100 opacity-80 bg-purple-800 inset-0 z-50 flex items-center justify-center">
+		<div v-if="loader" class="fixed w-100 h-100 opacity-80 bg-purple-800 inset-0 z-50 flex items-center justify-center">
 			<svg class="animate-spin -ml-1 mr-3 h-12 w-12 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
 				viewBox="0 0 24 24">
 				<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -11,7 +10,7 @@
 			</svg>
 		</div>
 		<div class="container">
-		<add-ticker @add-ticker="addTicker" :message="errorMessage" @input-ticker = "errorMessage = ''"/>
+			<add-ticker @add-ticker="addTicker" :message="errorMessage" @input-ticker="errorMessage = ''" />
 			<div class="flex gap-4 items-center justify-center">
 				<button v-if="page > 1"
 					class="my-4 inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-full text-white bg-gray-600 hover:bg-gray-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -35,8 +34,8 @@
 						<dt class="text-sm font-medium text-gray-500 truncate">
 							{{ ticker.name }} - USD
 						</dt>
-						<img v-if="tickerLoading && tickers[tickers.length - 1] === ticker" src="./assets/loader.gif"
-							alt="" class="w-10 mx-auto">
+						<img v-if="tickerLoading && tickers[tickers.length - 1] === ticker" src="./assets/loader.gif" alt=""
+							class="w-10 mx-auto">
 						<dd class="mt-1 text-3xl font-semibold text-gray-900">
 							{{ ticker.price }}
 						</dd>
@@ -101,31 +100,31 @@ export default {
 			maxStripeItems: 0,
 		}
 	},
-	components:{addTicker},
+	components: { addTicker },
 
 	methods: {
 		addTicker(data) {
 			//добавление тикеров
 			if (data) {
 				this.tickers.forEach(item => {
-					if ( item.name === data.toUpperCase() || item.name === data) {
+					if (item.name === data.toUpperCase() || item.name === data) {
 						this.errorMessage = 'Такой тикер уже добавлен';
 					}
 				});
-				if(!data || this.errorMessage){
+				if (!data || this.errorMessage) {
 					return;
 				}
 
-					this.tickerLoading = true;
-					this.tickers.push({});
-					requestTickets(data).then(r => {
-						this.tickers[this.tickers.length - 1] = {
-							name: data.toUpperCase(),
-							price: r.USD
-						};
-						this.tickerLoading = false;
-						this.errorMessage = '';
-					});
+				this.tickerLoading = true;
+				this.tickers.push({});
+				requestTickets(data).then(r => {
+					this.tickers[this.tickers.length - 1] = {
+						name: data.toUpperCase(),
+						price: r.USD
+					};
+					this.tickerLoading = false;
+					this.errorMessage = '';
+				});
 			}
 		},
 
@@ -225,7 +224,7 @@ export default {
 			const params = new URLSearchParams(url.search);
 			params.set('page', this.page);
 			params.set('filter', this.searchValue);
-			if(!this.searchValue){
+			if (!this.searchValue) {
 				params.delete('filter');
 			}
 			url.search = params;
