@@ -231,11 +231,10 @@ export default {
 			window.history.pushState({}, `${document.title} = page = ${this.page}`, url);
 		},
 
-
 		calculateStripe() {
 			const stripeContainer = this.$refs.stripesContainer;
 			const stripeItemWidth = 38;
-			if (stripeContainer.childElementCount) {
+			if (stripeContainer && stripeContainer.childElementCount) {
 				this.maxStripeItems = Math.floor(stripeContainer.clientWidth / stripeItemWidth);
 			}
 		}
