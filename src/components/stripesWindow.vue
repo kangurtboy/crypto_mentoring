@@ -4,7 +4,7 @@
 			{{ currentTicker.name }} - USD
 		</h3>
 		<div class="flex items-end border-gray-600 border-b border-l h-64" ref="stripesContainer">
-			<div v-for="(stripe, id) of stripesPersentage" class="bg-purple-800 border w-10" :key="id" :style="{
+			<div v-for="(stripe, id) of stripesPersentage" class="bg-purple-800 border w-10 stripe" :key="id" :style="{
 				'height': `${stripe}%`
 			}" ref="stripeItem">
 			</div>
@@ -91,3 +91,18 @@ export default {
 	}
 }
 </script>
+
+<style scoped>
+@keyframes slideStripe {
+	from {
+		max-height: 0;
+	}
+	to {
+		max-height: 100%;
+	}
+}
+
+.stripe {
+	animation: slideStripe 1s ease-in-out;
+}
+</style>
