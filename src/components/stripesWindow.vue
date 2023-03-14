@@ -31,7 +31,6 @@ export default {
 			stripesPersentage: [],
 			stripeInterval: null,
 			stripes: [],
-			isOpen:true,
 		}
 	},
 	methods: {
@@ -42,11 +41,10 @@ export default {
 				this.maxStripeItems = Math.floor(stripeContainer.clientWidth / stripeItemWidth);
 			}
 		},
-		async renderStripes() {
+		async renderStripes() {                           
 			//отрисовка столбиков для показа графика тикера
 			this.stripesPersentage = [];
 			this.stripes = [];
-
 			this.stripeInterval = setInterval(() => {
 				if (this.currentTicker) {
 					requestTickets(this.currentTicker.name).then(
@@ -66,7 +64,22 @@ export default {
 			}, 5000);
 		},
 		closeWindow() {
-			this.$emit('close-window' , this);
+			this.$emit('close-window');
+			clearInterval(this.stripeInterval);
+		},
+		openWindow() {
+			this.renderStripes();
+		}
+	},
+	mounted: function () {
+		window.addEventListener('resize', this.calculateStripe);
+	},
+	watch: {
+		currentTicker() {
+
+			if (this.currentTicker) {
+				this.openWindow();
+			}
 		}
 	},
 	props: {
