@@ -41,23 +41,28 @@ export default {
 				this.maxStripeItems = Math.floor(stripeContainer.clientWidth / stripeItemWidth);
 			}
 		},
-		async renderStripes() {                           
+		async renderStripes() {
 			//отрисовка столбиков для показа графика тикера
 			this.stripesPersentage = [];
 			this.stripes = [];
+			clearInterval(this.stripeInterval);
+
 			this.stripeInterval = setInterval(() => {
+
 				if (this.currentTicker) {
 					requestTickets(this.currentTicker.name).then(
 						r => {
 							this.calculateStripe();
+
 							if (this.stripesPersentage.length > this.maxStripeItems) {
 								this.stripesPersentage.shift();
 							}
+							const endNumberCount = -2;
+							const minPercent = 5;
+							const stripePercent = r.USD.toString().slice(endNumberCount);
+
 							this.stripes.push(r.USD);
-							const min = Math.min(...this.stripes);
-							const minPersent = 50;
-							const persentage = Math.floor(((r.USD - min) * 100) / 100) + minPersent;
-							this.stripesPersentage.push(persentage);
+							this.stripesPersentage.push(Number(stripePercent) + minPercent);
 						}
 					);
 				}
@@ -65,7 +70,6 @@ export default {
 		},
 		closeWindow() {
 			this.$emit('close-window');
-			clearInterval(this.stripeInterval);
 		},
 		openWindow() {
 			this.renderStripes();
