@@ -54,7 +54,7 @@
 			</dl>
 			<h1 v-if="!tickers.length" class="text-xl text-center">Нет активных тикеров</h1>
 			<hr class="w-full border-t border-gray-600 my-4" />
-			<stripes-window-vue :current-ticker="currentTicker" @close-window="openWindow()"/>
+			<stripes-window-vue :current-ticker="currentTicker" @close-window="closeWindow"/>
 		</div>
 	</div>
 </template>
@@ -119,14 +119,14 @@ export default {
 			this.currentTicker = ticker;
 		},
 
-
 		reset() {
 			//сброс выбраного тикера
 			this.currentTicker = null;
 		},
 
-		openWindow(openedWindow){
-			console.log(openedWindow);
+		closeWindow(){
+			//когда придет события закрытие окна
+			this.currentTicker = null;
 		},
 
 		updateRenderetTickers() {
@@ -248,8 +248,5 @@ export default {
 			this.urlFiltering();
 		}
 	},
-	mounted: function () {
-		window.addEventListener('resize', this.calculateStripe);
-	}
 }
 </script>
